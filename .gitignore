@@ -33,6 +33,9 @@ project/.env
 nominatim.dump
 *.dump
 
+# Misc
+.DS_Store
+
 # Editor/IDE
 # .idea/
 # .vscode/
