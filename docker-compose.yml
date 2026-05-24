@@ -1,0 +1,37 @@
+services:
+  db:
+    build: ./docker/db
+    environment:
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-postgres}
+      NOMINATIM_PASSWORD: ${NOMINATIM_PASSWORD:-nominatim}
+    volumes:
+      - nominatim_pgdata:/var/lib/postgresql/data
+      - ${NOMINATIM_DUMP:-./nominatim.dump}:/docker-entrypoint-initdb.d/dump/nominatim.dump:ro
+      - ./docker/db/conf.d/postgres-tuning.conf:/etc/postgresql/nominatim-tuning.conf:ro
+    ports:
+      - "5432:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 5s
+      timeout: 5s
+      retries: 30
+      start_period: 10s
+    shm_size: "1g"
+
+  api:
+    build:
+      context: ./docker/api
+      args:
+        NOMINATIM_VERSION: ${NOMINATIM_VERSION:-5.3}
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      NOMINATIM_DATABASE_DSN: pgsql:dbname=nominatim;user=nominatim;password=${NOMINATIM_PASSWORD:-nominatim};host=db;port=5432
+    volumes:
+      - ./project:/nominatim:ro
+    ports:
+      - "8091:8080"
+
+volumes:
+  nominatim_pgdata:
