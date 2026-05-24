@@ -1,2 +1,4 @@
-docker run -v ./pbf-data:/nominatim/data/pbf-data -p 8090:8080 geocoder
-
+#!/usr/bin/env bash
+set -euo pipefail
+cd "$(dirname "$0")/.."
+docker compose up "$@"
