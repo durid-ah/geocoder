@@ -19,7 +19,7 @@ profile.cov
 
 # Dependency directories (remove the comment below to include it)
 # vendor/
-nominatim/pbf-data/
+/pbf-data/
 
 # Go workspace file
 go.work
